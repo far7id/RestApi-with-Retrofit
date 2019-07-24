@@ -1,10 +1,16 @@
 package com.example.retrofit;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +22,11 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity
 {
     private Api api;
+    private RecyclerView recyclerView;
+    private NestedScrollView scroll;
     private TextView txtRes;
+    private List<Post> recyclerPostsList;
+    private RecyclerAdapter recyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,7 +34,13 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        recyclerView = findViewById(R.id.recyclerxml);
+
+        scroll = findViewById(R.id.scroll_xml);
         txtRes = findViewById(R.id.txt_res_xml);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(layoutManager);
 
         api = RetrofitBuilder.getRetrofitClient().create(Api.class);
 
@@ -37,6 +53,10 @@ public class MainActivity extends AppCompatActivity
 
     private void getPosts()
     {
+        recyclerView.setVisibility(View.VISIBLE);
+
+        recyclerPostsList = new ArrayList<>();
+
         //Call<List<Post>> call = api.getPosts();
 
         Call<List<Post>> call = api.getPosts(1, null, null);
@@ -48,34 +68,27 @@ public class MainActivity extends AppCompatActivity
             {
                 if (!response.isSuccessful())
                 {
-                    txtRes.setText("Code: " + response.code());
+                    Log.e("Code: ", String.valueOf(response.code()));
                     return;
                 }
 
-                List<Post> posts = response.body();
-
-                for (Post post : posts)
-                {
-                    String content = "";
-                    content += "ID: " + post.getId() + "\n";
-                    content += "User Id: " + post.getUserId() + "\n";
-                    content += "Title: " + post.getTitle() + "\n";
-                    content += "Text: " + post.getText() + "\n";
-
-                    txtRes.append(content);
-                }
+                recyclerPostsList = response.body();
+                recyclerAdapter = new RecyclerAdapter(recyclerPostsList, getApplicationContext());
+                recyclerView.setAdapter(recyclerAdapter);
             }
 
             @Override
             public void onFailure(Call<List<Post>> call, Throwable t)
             {
-                txtRes.setText(t.getMessage());
+                Log.e("onFailure: ", t.getMessage());
             }
         });
     }
 
     private void getComments()
     {
+        scroll.setVisibility(View.VISIBLE);
+        txtRes.setVisibility(View.VISIBLE);
         Call<List<Comment>> call = api.getComments(3);
 
         call.enqueue(new Callback<List<Comment>>()
@@ -114,6 +127,9 @@ public class MainActivity extends AppCompatActivity
 
     private void createPost()
     {
+        scroll.setVisibility(View.VISIBLE);
+        txtRes.setVisibility(View.VISIBLE);
+
         Post post = new Post(23, "new title", "new text");
 
         Call<Post> call = api.createPost(post);
@@ -150,6 +166,9 @@ public class MainActivity extends AppCompatActivity
 
     private void updatePost()
     {
+        scroll.setVisibility(View.VISIBLE);
+        txtRes.setVisibility(View.VISIBLE);
+
         /*Map<String, String> map = new HashMap<>();
         map.put("header1", "def");
         map.put("header2", "def2");*/
@@ -190,6 +209,9 @@ public class MainActivity extends AppCompatActivity
 
     private void deletePost()
     {
+        scroll.setVisibility(View.VISIBLE);
+        txtRes.setVisibility(View.VISIBLE);
+
         Call<Void> call = api.deletePost(5);
 
         call.enqueue(new Callback<Void>()

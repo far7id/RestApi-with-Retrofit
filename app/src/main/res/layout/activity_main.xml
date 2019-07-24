@@ -9,9 +9,19 @@
     tools:context=".MainActivity"
     >
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerxml"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:ignore="MissingConstraints"
+        />
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_xml"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         >
 
     <TextView
@@ -22,9 +32,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
         tools:ignore="MissingConstraints"
         />
 
     </androidx.core.widget.NestedScrollView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

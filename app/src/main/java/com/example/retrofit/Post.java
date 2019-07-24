@@ -11,7 +11,6 @@ public class Post
     @SerializedName("body")
     private String text;
 
-    //constractor
     public Post(int userId, String title, String text)
     {
         this.userId = userId;
